@@ -1,6 +1,8 @@
 import dotenv from "dotenv"; dotenv.config();
 import express from "express";
 
+const PORT = process.env.PORT || 3000;
+
 //dirName for other scripts to access
 import { dirname } from "path";
 import { fileURLToPath } from "url";
@@ -22,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //server starts listening
-app.listen(3000, () => {
+app.listen(PORT, () => {
     console.log("Serverside -- server listening");
 });
 
