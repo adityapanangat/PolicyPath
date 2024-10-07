@@ -2,6 +2,9 @@
   "name": "nasa-space-apps",
   "version": "1.0.0",
   "description": "",
+  "engines": {
+    "node": "18.16.1"
+  },
   "main": "index.js",
   "scripts": {
     "build": "webpack --config webpack.config.js",
