@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default {
-    mode: 'development', // Change this to 'production' for a production build
+    mode: 'production', // Change this to 'production' for a production build
     entry: './public/globe.js',
     output: {
         filename: 'bundle.js',
