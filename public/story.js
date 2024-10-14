@@ -74,7 +74,7 @@ async function fetchStoryData(lat, long) {
         storyContentElement.innerHTML = `
             <div style="display: flex; flex-direction: column; align-items: center;">
                 <div style="font-weight: bold; margin-bottom: 10px;">
-                    Closest data availabe | Latitude: ${data.closestLatitude}, Longitude: ${data.closestLongitude}
+                    Closest data available | Latitude: ${data.closestLatitude}, Longitude: ${data.closestLongitude}
                 </div>
                 <div style="width: 100%; max-width: 600px;">
                     <canvas id="emissionsChart"></canvas>
