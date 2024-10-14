@@ -366,4 +366,3 @@ function cartesianToSpherical(x, y, z) {
 
 // Run the app
 runApp(app, scene, renderer, camera, true, undefined, undefined);
-alert("Welcome to Policy Path -- \n1) click anywhere on the globe\n2) see the impact of regional policies on carbon emissions!");

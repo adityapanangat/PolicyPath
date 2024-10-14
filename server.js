@@ -29,6 +29,10 @@ app.listen(PORT, () => {
 });
 
 app.get("/", (req, res) => {
+    res.render("pages/preview.ejs");
+});
+
+app.get("/dash", (req, res) => {
     res.render("pages/index.ejs");
 });
 
