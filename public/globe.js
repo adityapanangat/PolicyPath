@@ -24,6 +24,7 @@ var storyMode = false;
 
 export function setStoryMode(tf) {
   storyMode = tf;
+  storyMode ? setGuiVisibility(false) : setGuiVisibility(true);
 }
 
 export function getStoryMode() {
@@ -50,6 +51,35 @@ window.addEventListener('mousemove', (event) => {
   }
 }, false);
 
+
+export function setGuiVisibility(visible) {
+  visible ? gui.domElement.style.display = 'block' : gui.domElement.style.display = 'none';
+}
+
+const guiParams = {
+  latitude: 0,  // Default latitude
+  latDirection: 'North',  // Default direction for latitude (North or South)
+  longitude: 0, // Default longitude
+  lonDirection: 'East',  // Default direction for longitude (East or West)
+  enter: () => handleEnterCoordinates() // Function to handle "Enter" button click
+};
+
+
+function handleEnterCoordinates() {
+  console.log("HI!");
+  setGuiVisibility(false); //turn off gui
+  storyMode = true;
+  
+  let { latitude, latDirection, longitude, lonDirection } = guiParams;
+  latitude = latDirection === 'South' ? -latitude : latitude;
+  longitude = lonDirection === 'West' ? -longitude : longitude;
+  showStory(latitude, longitude);
+}
+
+function validateInput(value, min, max) {
+  return value >= min && value <= max; // Returns true if within the range
+}
+
 // Define global variable
 global.THREE = THREE
 THREE.ColorManagement.enabled = true;
@@ -74,10 +104,37 @@ let renderer = createRenderer({ antialias: true }, (_renderer) => {
 
 let camera = createCamera(45, 1, 1000, { x: 0, y: 0, z: 30 });
 
+const gui = new dat.GUI();
 
 // Create the app object
 let app = {
   async initScene() {
+
+    gui.add(guiParams, 'latitude').name('Latitude').onChange((value) => {
+      const latIn = parseFloat(value);
+      if (!validateInput(latIn, 0, 90)) {
+        alert('Latitude must be between 0 and 90.');
+        guiParams.latitude = 0; // Reset to default
+      }
+    });
+
+    gui.add(guiParams, 'latDirection', ['North', 'South']).name('Latitude Direction'); // Dropdown for N/S
+    
+    gui.add(guiParams, 'longitude').name('Longitude').onChange((value) => {
+      const longIn = parseFloat(value);
+      if (!validateInput(longIn, 0, 180)) {
+        alert('Longitude must be between 0 and 180.');
+        guiParams.longitude = 0; // Reset to default
+      }
+    });
+    
+    gui.add(guiParams, 'lonDirection', ['East', 'West']).name('Longitude Direction'); // Dropdown for E/W
+    gui.add(guiParams, 'enter').name('CLICK to search');
+
+
+
+    // GUI parameters for latitude, longitude, and direction
+
     // OrbitControls
     this.controls = new OrbitControls(camera, renderer.domElement);
     this.controls.enableDamping = true;
@@ -217,10 +274,14 @@ let app = {
 
     // On mouseup, trigger the click event only if not dragging
     window.addEventListener('mouseup', (event) => {
-      if (!isDragging && !storyMode) {
+      
+      if (!isDragging && !storyMode && isClickOnEarth(event)) {
+        setGuiVisibility(false);
         storyMode = true;
         this.onClick(event);
+        console.log("bye");
       }
+      console.log("a"); 
     }, false);
    // window.addEventListener('mousup', this.onClick.bind(this), false);
   },
@@ -252,10 +313,8 @@ let app = {
       
       console.log(lat + ", " + lon);
 
-      await showStory(lat, lon);
-      
       //USE HERE: do things with lat and lon
-
+      await showStory(lat, lon);
 },
 
   updateScene(interval, elapsed) {
@@ -267,9 +326,27 @@ let app = {
     if ( shader ) {
       let offset = (interval * 0.005 * params.speedFactor) / (2 * Math.PI)
       shader.uniforms.uv_xOffset.value += offset % 1
-    }
+    }  
   }
 }
+
+function isClickOnEarth(event) {
+  // Get normalized device coordinates (-1 to +1) for both components
+  const mouse = new THREE.Vector2();
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+  // Create a raycaster
+  const raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(mouse, camera); // Set the raycaster from the camera using the mouse coordinates
+
+  // Calculate objects intersecting the picking ray
+  const intersects = raycaster.intersectObject(app.earth); // Assuming your Earth mesh is accessible as app.earth
+
+  // Return true if there are intersections, otherwise false
+  return intersects.length > 0;
+}
+
 
 function cartesianToSpherical(x, y, z) {
     // Compute the radius (distance from the origin)

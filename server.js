@@ -37,11 +37,6 @@ app.get("/getStory",  function(req, res) {
     const climatePolicies = getClimatePolicies(req.query.lat, req.query.long, 2, req.query.pageNumber);
     const { emissionsData: landEmissions, closestLatitude, closestLongitude } = getLandEmissionsForAllYears(req.query.lat, req.query.long);
 
-    console.log('Land Emissions:', landEmissions); // Check emissions data
-    console.log('Climate Policies:', climatePolicies); // Check policies
-    console.log('Closest Latitude:', closestLatitude); // Check latitude
-    console.log('Closest Longitude:', closestLongitude); // Check longitude
-
     const toReturn = {
         landEmissions,
         climatePolicies,
